@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 09-02-2017 a las 04:13:20
+-- Tiempo de generación: 10-02-2017 a las 11:05:01
 -- Versión del servidor: 10.1.13-MariaDB
 -- Versión de PHP: 7.0.8
 
@@ -37,6 +37,28 @@ CREATE TABLE `categories` (
 
 INSERT INTO `categories` (`id_category`, `name_category`) VALUES
 (1, 'Computadoras');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `clientes`
+--
+
+CREATE TABLE `clientes` (
+  `id_cliente` int(11) UNSIGNED NOT NULL,
+  `nombre_cliente` varchar(60) NOT NULL,
+  `dni_cliente` varchar(255) NOT NULL,
+  `telefono_cliente` varchar(255) NOT NULL,
+  `direccion_cliente` varchar(255) NOT NULL,
+  `observaciones_cliente` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `clientes`
+--
+
+INSERT INTO `clientes` (`id_cliente`, `nombre_cliente`, `dni_cliente`, `telefono_cliente`, `direccion_cliente`, `observaciones_cliente`) VALUES
+(2, 'francisco', '26541964', '126161', 'direccion francisco', 'la revista goza de francisco');
 
 -- --------------------------------------------------------
 
@@ -213,8 +235,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `email`, `cur_login_time`, `cur_login_ip`, `cur_login_area`, `last_login_ip`, `last_login_area`, `last_login_time`, `reg_time`, `reg_ip`, `reg_area`, `status`, `login_times`, `owner_sites`, `parent_user_id`, `company_id`, `photo`, `user_type`, `issys`) VALUES
-(3, 'admin', '$2y$10$xHMQKNYwEkhGwGIDM9rKo.lu2ZDUypqgv4oOi2DF2cTzH5n5sR2r.', 'chaegumi@qq.com', '2017-02-09 01:50:47', '::1', '', '::1', '', '2017-02-08 21:00:41', '2013-09-18 15:33:48', '::1', '', 1, 799, 'a:6:{i:0;s:2:"52";i:1;s:2:"53";i:2;s:2:"55";i:3;s:2:"56";i:4;s:2:"57";i:5;s:2:"58";}', 0, 0, NULL, 1, 1),
-(23216, 'nuevo', '$2y$10$11m01hGQh5hHoUgIEb/LTOPU4PfXwzFtE/5lMc84Q3GxANhcoA0z2', 'sartin.consultas@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, '2017-02-08 05:20:33', '', '', 1, 0, NULL, 0, 0, NULL, 0, 0);
+(3, 'admin', '$2y$10$xHMQKNYwEkhGwGIDM9rKo.lu2ZDUypqgv4oOi2DF2cTzH5n5sR2r.', 'chaegumi@qq.com', '2017-02-10 06:24:02', '::1', '', '::1', '', '2017-02-09 01:50:47', '2013-09-18 15:33:48', '::1', '', 1, 800, 'a:6:{i:0;s:2:"52";i:1;s:2:"53";i:2;s:2:"55";i:3;s:2:"56";i:4;s:2:"57";i:5;s:2:"58";}', 0, 0, NULL, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -248,8 +269,7 @@ CREATE TABLE `user_roles` (
 --
 
 INSERT INTO `user_roles` (`userID`, `roleID`, `addDate`, `id`) VALUES
-(3, 5, '2015-11-29 00:09:33', 79),
-(23216, 4, '2017-02-08 05:51:25', 85);
+(3, 5, '2015-11-29 00:09:33', 79);
 
 --
 -- Índices para tablas volcadas
@@ -260,6 +280,13 @@ INSERT INTO `user_roles` (`userID`, `roleID`, `addDate`, `id`) VALUES
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id_category`);
+
+--
+-- Indices de la tabla `clientes`
+--
+ALTER TABLE `clientes`
+  ADD PRIMARY KEY (`id_cliente`),
+  ADD KEY `dni_cliente` (`dni_cliente`);
 
 --
 -- Indices de la tabla `events`
@@ -330,6 +357,11 @@ ALTER TABLE `user_roles`
 ALTER TABLE `categories`
   MODIFY `id_category` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
+-- AUTO_INCREMENT de la tabla `clientes`
+--
+ALTER TABLE `clientes`
+  MODIFY `id_cliente` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+--
 -- AUTO_INCREMENT de la tabla `events`
 --
 ALTER TABLE `events`
@@ -353,7 +385,7 @@ ALTER TABLE `role_perms`
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户编号', AUTO_INCREMENT=23218;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户编号', AUTO_INCREMENT=23219;
 --
 -- AUTO_INCREMENT de la tabla `user_perms`
 --
@@ -363,7 +395,7 @@ ALTER TABLE `user_perms`
 -- AUTO_INCREMENT de la tabla `user_roles`
 --
 ALTER TABLE `user_roles`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '编号', AUTO_INCREMENT=87;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '编号', AUTO_INCREMENT=90;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
