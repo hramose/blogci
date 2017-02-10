@@ -1,0 +1,188 @@
+<?php
+
+// inicio Crear tablas
+public function crear_tabla()
+{
+  $this->load->dbforge();
+
+  $fields = array(
+        'id' => array(
+          'type' => 'INT',
+          'constraint' => 11,
+          'unsigned' => TRUE,
+          'auto_increment' => TRUE
+        ),
+        'username' => array(
+          'type' => 'VARCHAR',
+          'constraint' => 60
+        ),
+        'email' => array(
+          'type' => 'VARCHAR',
+          'constraint' => 255
+        ),
+        'password' => array(
+          'type' => 'VARCHAR',
+          'constraint' => 255
+        )
+      );
+      $this->dbforge->add_field($fields);
+      $this->dbforge->add_key('id',TRUE);
+      $this->dbforge->add_key('username');
+      $this->dbforge->create_table('users',TRUE);
+}
+// fin Crear tablas
+
+// Datos para ajax
+
+function data(){
+
+  //instanciamos la clase stdClass
+  $response = new stdClass;
+  $response->draw = $this->input->post('draw');
+
+  // $search = $this->input->post('search');
+  // $this->session->set_userdata('search', $search);
+  // $perpage = 10;
+
+  $this->db->select('count(A.id_category) as ccount', FALSE);
+  $this->db->from('categories A');
+  $q = $this->db->get()->row();
+  $response->recordsTotal = $q->ccount;
+
+  // $offset = $response->draw * $perpage;
+
+  $this->db->select('A.*');
+  $this->db->from('categories A');
+  // if($search['value']){
+  // }
+  $this->db->order_by('A.id_category', 'desc');
+  $this->db->limit($this->input->post('length'), $this->input->post('start'));
+  $results = $this->db->get()->result();
+
+  $response->recordsFiltered = $response->recordsTotal;
+
+  $response->data = array();
+  foreach($results as $row){
+    $data = array();
+    $data['id_category'] = $row->id_category;
+    $data['name_category'] = $row->name_category;
+
+    $response->data[] = $data;
+  }
+
+  $this->output->set_output(json_encode($response));
+}
+
+// fin datos para ajax
+
+// inicio CRUD
+public function save()
+{
+  // tomamos ID del input ID
+  $id = intval($this->input->post('id'));
+  // establecemos paramentros de validaciones
+  $this->form_validation->set_rules('input a validar', 'input a validar', 'trim|required');
+  // iniciamos validacion
+  if($this->form_validation->run() === FALSE){
+    // si hay algo mal explica por qué
+    json_response(array('success' => FALSE, 'msg' => validation_errors()));
+  }else{
+    // si esta todo bien comienza la inserción
+
+    //si es un ID nuevo ingresaremos los datos
+    if($id === 0){
+      //check de permiso
+
+      //check_permission('admin-add-permission');
+
+      //comienza la consulta
+      $this->db->trans_begin();
+
+      //declaramos los datos a insertar
+      $data = array(
+        'id_category' => intval($this->input->post('id')),
+        'name_category' => trim($this->input->post('name_category'))
+      );
+
+      //especificamos a que tabla insertaremos los datos
+      $this->db->insert('categories', $data);
+
+      //actualizamos caché
+      cxp_update_cache();
+
+      //transaccion completada
+      $this->db->trans_complete();
+
+      //Damos el mensaje de que salio todo bien.
+      json_response(array('success' => TRUE, 'msg' => 'Categoria añadida correctamente'));
+
+      //Si es un id existente actualizamos los datos
+    }else{
+
+      //check de permisos
+      //check_permission('admin-edit-permission');
+
+      //comienza la consulta
+      $this->db->trans_begin();
+
+      //declaramos los datos a insertar
+      $data = array(
+        'id_category' => intval($this->input->post('id')),
+        'name_category' => trim($this->input->post('name_category'))
+      );
+
+      //especificamos id a actualizar y tabla
+      $this->db->where('id_category', $id);
+      $this->db->update('categories', $data);
+
+
+      //actualizamos cache y damos por terminada la actualizacion
+      cxp_update_cache();
+      $this->db->trans_complete();
+
+      //mensaje de que esta todo bien.
+      json_response(array('success' => TRUE, 'msg' => 'Categoria editada correctamente.'));
+    }
+
+  }
+}
+
+public function edit(){
+  //tomamos ID del input ID
+  $id = intval($this->input->get('id'));
+
+  //especificamos el campo a relacionar(id_category) y la tabla(categories)
+  $this->db->where('id_category', $id);
+  $info = $this->db->get('categories')->row();
+
+  //creamos un array con todos los datos obtenidos
+  $this->template_data['info'] = $info;
+  // $this->load->library('Member_acl');
+  // $my_acl=new Member_acl();
+  // $my_acl->getAllPerms();
+  // $rPerms = $my_acl->getRolePerms($id);
+
+  // $this->template_data['rPerms'] = $rPerms;
+
+  //llamamos la vista
+  $this->load->view('blog/category_edit', $this->template_data);
+}
+
+public function delete(){
+  //tomamos ID del input ID
+  $id = intval($this->input->get('id'));
+
+  //comienza la consulta
+  $this->db->trans_begin();
+
+  //especificamos el campo a relacionar(id_category) y la tabla(categories)
+  $this->db->where('id_category', $id);
+  $this->db->delete('categories');
+
+  //consulta terminada, actualizamos cache y damos el mensaje de que esta todo ok.
+  $this->db->trans_complete();
+  cxp_update_cache();
+  json_response(array('success' => TRUE, 'msg' => 'Categoria eliminada correctamente.'));
+}
+
+//fin CRUD
